@@ -65,7 +65,7 @@ namespace UnitTest
 
             bool actual = core.IsContainWord("2");
 
-            Assert.IsTrue(actual);
+            Assert.IsTrue(!actual);
         }
     }
 }
