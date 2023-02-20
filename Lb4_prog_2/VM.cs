@@ -2,9 +2,7 @@
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -60,56 +58,29 @@ namespace Lb4_prog_2
         public Core Core { get; }
         public Core.WordCombination SelectedWC { get; set; }
 
-        private GameSession cgSession;
-        public GameSession CGSession
+        private string gsOriginal;
+        public string GSOriginal
         {
             get
             {
-                return cgSession;
+                return gsOriginal;
             }
             set
             {
-                cgSession = value;
+                gsOriginal = value;
                 OnPropertyChanged();
             }
         }
-        private GameSession wgSession;
-        public GameSession WGSession
+        private List<string> gsWords;
+        public List<string> GSWords
         {
             get
             {
-                return wgSession;
+                return gsWords;
             }
             set
             {
-                wgSession = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private string cgsSelected;
-        public string CGSSelected
-        {
-            get
-            {
-                return cgsSelected;
-            }
-            set
-            {
-                cgsSelected = value;
-                OnPropertyChanged();
-            }
-        }
-        private string wgsSelected;
-        public string WGSSelected
-        {
-            get
-            {
-                return wgsSelected;
-            }
-            set
-            {
-                wgsSelected = value;
+                gsWords = value;
                 OnPropertyChanged();
             }
         }
@@ -141,29 +112,44 @@ namespace Lb4_prog_2
             }
         }
 
-        private string cgsAnswer;
-        public string CGSAnswer
+        private string gsEntered;
+        public string GSEntered
         {
             get
             {
-                return cgsAnswer;
+                return gsEntered;
             }
             set
             {
-                cgsAnswer = value;
+                gsEntered = value;
                 OnPropertyChanged();
             }
         }
-        private string wgsAnswer;
-        public string WGSAnswer
+
+        private string gsRightAnswer;
+        public string GSRightAnswer
         {
             get
             {
-                return wgsAnswer;
+                return gsRightAnswer;
             }
             set
             {
-                wgsAnswer = value;
+                gsRightAnswer = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int score;
+        public int Score
+        {
+            get
+            {
+                return score;
+            }
+            set
+            {
+                score = value; 
                 OnPropertyChanged();
             }
         }
@@ -214,46 +200,56 @@ namespace Lb4_prog_2
         {
             if(start)
             {
+                Core.StartNewChoiceSession();
+                Score = Core.GetScore();
                 CGSButtonText = "Проверить";
                 CGSButtonVisibility = Visibility.Collapsed;
-                CGSession = Core.GetChoiceSession();
-                CGSSelected = "";
+                string s;
+                GSWords = Core.GetChoiceData(out s);
+                GSOriginal= s;
+                GSEntered = "";
             }
             else
             {
                 CGSButtonText = "Далее";
                 CGSButtonVisibility = Visibility.Visible;
-                if (CGSSelected != null && CGSession.EnterAsnwer(CGSSelected))
+                if (GSEntered != null && Core.EnterAnswer(GSEntered))
                 {
-                    CGSAnswer = "Ответ верный!";
+                    GSRightAnswer = "Ответ верный!";
                 }
                 else
                 {
-                    CGSAnswer = CGSession.GetAnswer();
+                    GSRightAnswer = Core.GetAnswer();
                 }
+                Score = Core.GetScore();
             }
         }
         private void goWrite(bool start)
         {
             if (start)
             {
+                Core.StartNewWriteSession();
+                Score = Core.GetScore();
                 WGSButtonText = "Проверить";
                 WGSButtonVisibility = Visibility.Collapsed;
-                WGSession = Core.GetWriteSession();
-                WGSSelected = "";
+                string s;
+                Core.GetWriteData(out s);
+                GSOriginal = s;
+                GSEntered = "";
             }
             else
             {
                 WGSButtonText = "Далее";
                 WGSButtonVisibility = Visibility.Visible;
-                if (WGSSelected != null && WGSession.EnterAsnwer(WGSSelected))
+                if (GSEntered != null && Core.EnterAnswer(GSEntered))
                 {
-                    WGSAnswer = "Ответ верный!";
+                    GSRightAnswer = "Ответ верный!";
                 }
                 else
                 {
-                    WGSAnswer = WGSession.GetAnswer();
+                    GSRightAnswer = Core.GetAnswer();
                 }
+                Score = Core.GetScore();
             }
         }
 
@@ -293,6 +289,7 @@ namespace Lb4_prog_2
                 return openChoiceGameCommand ??
                     (openChoiceGameCommand = new Command(obj =>
                     {
+                        Core.ClearScore();
                         goChoice(true);
                         MainFrame.Navigate(pages[2]);
                         ReturnButtonVisibility = Visibility.Visible;
@@ -308,6 +305,7 @@ namespace Lb4_prog_2
                 return openWriteGameCommand ??
                     (openWriteGameCommand = new Command(obj =>
                     {
+                        Core.ClearScore();
                         goWrite(true);
                         MainFrame.Navigate(pages[3]);
                         ReturnButtonVisibility = Visibility.Visible;
@@ -401,7 +399,7 @@ namespace Lb4_prog_2
                         try
                         {
                             new Uri(FilePath);
-                        } catch(UriFormatException)
+                        } catch
                         {
                             FilePath = "Неверный путь";
                             return;

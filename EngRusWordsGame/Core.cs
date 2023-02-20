@@ -29,6 +29,10 @@ namespace EngRusWordsGame
         private readonly ChoiceGameFactory cgFactory;
         private readonly WriteGameFactory wgFactory;
 
+        private GameSession gameSession;
+
+        private int score;
+
         public Core()
         {
             cgFactory = new ChoiceGameFactory();
@@ -74,14 +78,66 @@ namespace EngRusWordsGame
             return new WordCombination();
         }
 
-        public GameSession GetChoiceSession()
+        public void StartNewChoiceSession()
         {
-            return cgFactory.CreateSession(dictionary.ToList());
+            gameSession = cgFactory.CreateSession(dictionary.ToList());
         }
 
-        public GameSession GetWriteSession()
+        public void StartNewWriteSession()
         {
-            return wgFactory.CreateSession(dictionary.ToList());
+            gameSession = wgFactory.CreateSession(dictionary.ToList());
+        }
+
+        public void ClearScore()
+        {
+            score = 0;
+        }
+
+        public List<string> GetChoiceData(out string original)
+        {
+            if(gameSession == null)
+            {
+                original = "";
+                return new List<string>();
+            }
+            original = gameSession.Original;
+            return ((ChoiceGameSession)gameSession).Words;
+        }
+
+        public void GetWriteData(out string original)
+        {
+            if (gameSession == null)
+            {
+                original = "";
+                return;
+            }
+            original = gameSession.Original;
+        }
+
+        public bool EnterAnswer(string answer)
+        {
+            if (gameSession == null)
+            {
+                return false;
+            }
+            bool res = gameSession.EnterAsnwer(answer);
+            if (res)
+                score += 1;
+            return res;
+        }
+
+        public string GetAnswer()
+        {
+            if (gameSession == null)
+            {
+                return "";
+            }
+            return gameSession.GetAnswer();
+        }
+
+        public int GetScore()
+        {
+            return score;
         }
 
         public void ImportDictionary(string path)

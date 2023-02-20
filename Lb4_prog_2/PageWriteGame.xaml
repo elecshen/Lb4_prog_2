@@ -15,18 +15,27 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <Label Grid.Row="0" Content="{Binding WGSession.Original}" FontSize="24"/>
-        <Label Grid.Row="1" Content="Выберите перевод" FontSize="18"/>
-        <TextBox Grid.Row="2" FontSize="20" Text="{Binding WGSSelected}"/>
-        <Button Grid.Row="3" Content="{Binding WGSButtonText}" FontSize="18" Command="{Binding WGSNextCommand}" Height="40"/>
-        <Grid Grid.Row="4" Visibility="{Binding WGSButtonVisibility}">
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="Счет: " FontSize="18"/>
+            <Label Grid.Column="1" Content="{Binding Score}" FontSize="18"/>
+        </Grid>
+        <Label Grid.Row="1" Content="{Binding GSOriginal}" FontSize="24"/>
+        <Label Grid.Row="2" Content="Выберите перевод" FontSize="18"/>
+        <TextBox Grid.Row="3" FontSize="20" Text="{Binding GSEntered}"/>
+        <Button Grid.Row="4" Content="{Binding WGSButtonText}" FontSize="18" Command="{Binding WGSNextCommand}" Height="40"/>
+        <Grid Grid.Row="5" Visibility="{Binding WGSButtonVisibility}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <Label Grid.Row="0" Content="Правильный ответ" FontSize="18"/>
-            <Label Grid.Row="1" Content="{Binding WGSAnswer}" FontSize="20"/>
+            <Label Grid.Row="1" Content="{Binding GSRightAnswer}" FontSize="20"/>
         </Grid>
     </Grid>
 </Page>
